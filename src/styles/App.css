@@ -233,10 +233,27 @@
             flex-direction: column;
             padding: 14px 10px 0;
             overflow: hidden;
+            transition: width 0.25s ease, min-width 0.25s ease, padding 0.25s ease, border 0.25s ease;
+        }
+
+        .session-sidebar.collapsed {
+            width: 0;
+            min-width: 0;
+            padding: 0;
+            border-right: none;
+            overflow: hidden;
+        }
+
+        /* Sidebar header row: New Chat + Close button */
+        .session-sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0;
         }
 
         .session-new-btn {
-            width: 100%;
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -260,6 +277,56 @@
             background: #f0fdf4;
             box-shadow: 0 2px 8px rgba(31,114,70,0.12);
             transform: translateY(-1px);
+        }
+
+        /* Close sidebar button (inside sidebar) */
+        .sidebar-close-btn {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid #e5e7eb;
+            background: #ffffff;
+            border-radius: 9px;
+            cursor: pointer;
+            color: #6b7280;
+            transition: all 0.18s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .sidebar-close-btn:hover {
+            border-color: #1F7246;
+            color: #1F7246;
+            background: #f0fdf4;
+        }
+
+        /* Open sidebar button (in main content, visible when sidebar is closed) */
+        .sidebar-open-btn {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            z-index: 100;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid #e5e7eb;
+            background: #ffffff;
+            border-radius: 9px;
+            cursor: pointer;
+            color: #6b7280;
+            transition: all 0.18s ease;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+
+        .sidebar-open-btn:hover {
+            border-color: #1F7246;
+            color: #1F7246;
+            background: #f0fdf4;
         }
 
         .session-sidebar-title {
@@ -511,7 +578,7 @@
             margin-top: 20px;
             margin-bottom: 20px;
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
         }
 
         .welcome-title {
@@ -527,7 +594,7 @@
             color: #6b7280;
             margin: 0 0 16px 0;
             line-height: 1.4;
-            max-width: 600px;
+            max-width: 500px;
         }
 
         /* Scrollable content area styles - Hide scrollbar */
@@ -764,7 +831,7 @@
         /* Microsoft Copilot-style Search Interface - Front Page Only */
         .copilot-search-container {
             position: relative;
-            max-width: 700px !important;
+            max-width: 560px !important;
             margin: 0 auto !important; /* Center horizontally */
             padding: 0 20px;
             text-align: center; /* Center content within container */
@@ -776,13 +843,13 @@
             left: auto;
             transform: none;
             margin: 0 auto;
-            max-width: 600px;
+            max-width: 500px;
         }
 
         /* Ensure proper width is maintained on larger screens */
         @media (min-width: 1024px) {
             .copilot-search-container {
-                max-width: 700px !important;
+                max-width: 560px !important;
                 margin: 0 auto !important;
             }
             
@@ -794,7 +861,7 @@
         /* Force proper width on desktop screens */
         @media (min-width: 1200px) {
             .copilot-search-container {
-                max-width: 700px !important;
+                max-width: 560px !important;
                 margin: 0 auto !important;
             }
             
@@ -813,9 +880,7 @@
         .copilot-search-box {
             width: 100% !important;
             max-width: 100% !important;
-            margin: 0 auto; /* Center the search box within container */
-            border: none !important;
-            box-shadow: none !important;
+            margin: 0 auto;
         }
 
         /* Top Right Controls */
@@ -1213,10 +1278,10 @@
             display: flex;
             align-items: center;
             background: white;
-            border: 1px solid #e5e7eb;
+            border: 1.5px solid #d1d5db;
             border-radius: 24px;
-            padding: 18px 20px; /* Increased from 12px 16px to 18px 20px for more height and width */
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 10px 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0,0,0,0.06);
             transition: all 0.3s ease;
             animation: fadeInUp 0.6s ease-out 0.5s both;
             gap: 8px;
@@ -1224,7 +1289,7 @@
 
         .copilot-search-box:focus-within {
             border-color: #1F7246;
-            box-shadow: 0 4px 12px rgba(31, 114, 70, 0.15);
+            box-shadow: 0 4px 16px rgba(31, 114, 70, 0.18), 0 1px 4px rgba(0,0,0,0.06);
         }
 
         /* Search input styling */
@@ -4740,7 +4805,7 @@
             position: absolute;
             background: white;
             min-width: 400px;
-            max-width: 600px;
+            max-width: 500px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
             border-radius: 12px;
             border: 1px solid rgba(0, 0, 0, 0.08);
@@ -7129,13 +7194,13 @@
         /* ─────────────────────────────────────
            MAIN CONTENT
         ───────────────────────────────────── */
-        .main-content { background: #f6f8fa; }
+        .main-content { background: #ffffff; }
 
         /* ─────────────────────────────────────
            WELCOME SCREEN
         ───────────────────────────────────── */
         .welcome-screen {
-          background: linear-gradient(160deg, #f0fdf4 0%, #f6f8fa 40%, #f8faff 100%);
+          background: #ffffff;
         }
 
         .welcome-header { padding: 0 24px; }
@@ -7569,6 +7634,13 @@
           padding: 1px 7px;
           border-radius: 999px;
           letter-spacing: .04em;
+        }
+        .chat-brand-logo {
+          width: 28px;
+          height: 28px;
+          object-fit: contain;
+          border-radius: 50%;
+          flex-shrink: 0;
         }
 
         /* ── Hide logo from welcome screen top-left ── */

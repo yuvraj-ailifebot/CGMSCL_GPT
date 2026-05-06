@@ -8,6 +8,8 @@ function SessionSidebar({
   onDeleteSession,
   user,
   onLogout,
+  isOpen = true,
+  onClose,
 }) {
   const [confirmLogout, setConfirmLogout] = useState(false);
 
@@ -39,14 +41,26 @@ function SessionSidebar({
   };
 
   return (
-    <aside className="session-sidebar" aria-label="Chat sessions">
-      {/* New Chat Button */}
-      <button className="session-new-btn" onClick={onNewChat}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-        New Chat
-      </button>
+    <aside className={`session-sidebar${isOpen ? '' : ' collapsed'}`} aria-label="Chat sessions">
+      {/* Sidebar Header: New Chat + Close */}
+      <div className="session-sidebar-header">
+        <button className="session-new-btn" onClick={onNewChat}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          New Chat
+        </button>
+        <button
+          className="sidebar-close-btn"
+          onClick={onClose}
+          title="Close sidebar"
+          aria-label="Close sidebar"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/>
+          </svg>
+        </button>
+      </div>
 
       {/* Sessions */}
       <div className="session-sidebar-title">

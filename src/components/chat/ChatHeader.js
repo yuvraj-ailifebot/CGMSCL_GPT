@@ -1,4 +1,5 @@
 import React from 'react';
+import cgLogo from '../../assets/images/cg-govt.png';
 
 function ChatHeader({ onNewChat, onClearSessionMemory, isSending = false }) {
   return (
@@ -7,7 +8,7 @@ function ChatHeader({ onNewChat, onClearSessionMemory, isSending = false }) {
         <div className="chat-brand-pill" onClick={onNewChat} style={{ cursor: 'pointer' }}>
           <div className="chat-brand-dot"></div>
           <span className="chat-brand-name">CGMSCL GPT</span>
-          <span className="chat-brand-badge">AWS</span>
+          <img src={cgLogo} alt="CG Govt" className="chat-brand-logo" />
         </div>
       </div>
       <div className="chat-header-right">

@@ -19,7 +19,7 @@ function PromptCard({ card, onPromptClick, onCardClick }) {
       style={{ cursor: 'pointer' }}
     >
       <div className={`card-header-${card.type}`}>
-        <div className="card-icon">{card.icon}</div>
+        <div className="card-icon"><i className={card.icon}></i></div>
         <h3 className="card-title">{card.title}</h3>
         <button 
           className="dropdown-toggle" 

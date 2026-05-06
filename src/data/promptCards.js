@@ -32,7 +32,7 @@
         {
           id: 'Tender / RC Tracking ',
           type: 'main',
-          icon: '📋',
+          icon: 'fas fa-file-contract',
           title: 'Tender / RC Tracking',
           description: 'Monitor tender progress and track rate contract status, expiry dates, and vendor participation.',
           prompts: [
@@ -55,7 +55,7 @@
         {
           id: 'item_accepted_rc_pending_bucket',
           type: 'main',
-          icon: '✅',
+          icon: 'fas fa-circle-check',
           title: ' Accepted – RC',
           description: 'Track accepted items awaiting RC approval, monitor supplier delays, and view tender-wise status.',
           prompts: [
@@ -75,7 +75,7 @@
         {
           id: 'pipeline_supplies_bucket',
           type: 'main',
-          icon: '🚚',
+          icon: 'fas fa-truck-fast',
           title: 'Pipeline Supplies',
           description: 'Monitor items in transit, track delivery delays, supplier performance, and identify urgent follow-ups.',
           prompts: [
@@ -99,7 +99,7 @@
         {
           id: 'Purchase_Order_Planning',
           type: 'main',
-          icon: '📊',
+          icon: 'fas fa-file-invoice',
           title: 'Purchase Order Planning',
           description: 'Analyze indents using historical consumption, stock levels, pipeline supplies, and lead times.',
           prompts: [
@@ -110,7 +110,7 @@
         {
           id: 'Supply Turnaround Time',
           type: 'main',
-          icon: '⏱️',
+          icon: 'fas fa-stopwatch',
           title: 'Supply Turnaround Time',
           description: 'Track PO execution status, monitor supplier delivery performance, and identify supply delays.',
           prompts: [
@@ -126,7 +126,7 @@
         {
           id: 'Stock Analysis',
           type: 'main',
-          icon: '📊',
+          icon: 'fas fa-warehouse',
           title: 'Current Stock Analysis',
           description: 'Stock Analysis warehouse Wise, total Stock and item wise',
           prompts: [
@@ -140,7 +140,7 @@
         {
           id: 'quality_control_bucket',
           type: 'main',
-          icon: '🧪',
+          icon: 'fas fa-flask-vial',
           title: 'Quality Control Bucket',
           description: 'Monitor QC processes, track pending samples, analyze delays by supplier, and manage warehouse status.',
           prompts: [
@@ -155,7 +155,7 @@
         {
           id: 'near expiry_data_bucket',
           type: 'main',
-          icon: '📅',
+          icon: 'fas fa-hourglass-half',
           title: 'Near Expiry Stock',
           description: 'Track items approaching expiry dates, monitor supplier exposure, and identify items requiring urgent action.',
           prompts: [
@@ -179,7 +179,7 @@
         {
           id: 'expired_items_bucket',
           type: 'main',
-          icon: '🗑️',
+          icon: 'fas fa-box-archive',
           title: 'Expired Stock',
           description: 'Analyze expired stock across years, POs, and suppliers to assess quantity and financial impact.',
           prompts: [
@@ -201,7 +201,7 @@
         {
           id: 'drug_consumable_payment_status',
           type: 'main',
-          icon: '💰',
+          icon: 'fas fa-file-invoice-dollar',
           title: 'Payment Status (Drug /Consumable)',
           description: 'Monitor payment status for drugs and consumables, track pending files, and manage payments.',
           prompts: [

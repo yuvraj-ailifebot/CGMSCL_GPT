@@ -339,7 +339,7 @@ function MessageActions({ message, index, messages = [] }) {
           aria-label="Like response"
           disabled={selectedFeedback === 'dislike'}
         >
-          👍
+          <i className="fas fa-thumbs-up"></i>
         </button>
         <button
           className={`action-btn thumbs-down-btn ${selectedFeedback === 'dislike' ? 'active' : ''}`}
@@ -350,7 +350,7 @@ function MessageActions({ message, index, messages = [] }) {
           aria-label="Dislike response"
           disabled={selectedFeedback === 'like'}
         >
-          👎
+          <i className="fas fa-thumbs-down"></i>
         </button>
         <button
           className="action-btn"
@@ -358,7 +358,7 @@ function MessageActions({ message, index, messages = [] }) {
           title="Suggest"
           aria-label="Suggest improvement"
         >
-          💬
+          <i className="fas fa-comment-dots"></i>
         </button>
         <button
           className="action-btn copy-btn"
@@ -366,7 +366,7 @@ function MessageActions({ message, index, messages = [] }) {
           title="Copy message"
           aria-label="Copy message"
         >
-          {isCopied ? '✓' : '📋'}
+          {isCopied ? <i className="fas fa-check"></i> : <i className="fas fa-copy"></i>}
         </button>
         {(message.excel_download || message.excel_file_id || message.dataRows || message.suggestions) && (
           <button

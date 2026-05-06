@@ -5,8 +5,6 @@ import PromptCard from './PromptCard';
 import { globalPromptCards, extendedPromptCards } from '../../data/promptCards';
 import PromptGalleryModal from '../modals/PromptGalleryModal';
 import CardPromptsModal from '../modals/CardPromptsModal';
-import logoImage from '../../assets/images/motherson2.png';
-
 /**
  * Welcome Screen Component
  * Main welcome screen with prompt cards and search interface
@@ -34,21 +32,6 @@ function WelcomeScreen({ onSendMessage, onNewChat, backendType, setBackendType }
 
   return (
     <div className="welcome-screen" id="welcome-screen">
-      {/* CGMSCL Logo on Left */}
-      <div className="top-left-logo">
-        <img 
-          src={logoImage} 
-          alt="CGMSCL Logo" 
-          className="header-logo"
-          onClick={onNewChat}
-          style={{ cursor: 'pointer' }}
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = 'https://via.placeholder.com/150x60?text=Logo+Error';
-          }}
-        />
-      </div>
-      
       {/* Top Right Controls */}
       <TopRightControls onNewChat={onNewChat} />
 
