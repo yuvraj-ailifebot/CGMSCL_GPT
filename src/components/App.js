@@ -45,6 +45,24 @@ function getDisplayText(data) {
   return '';
 }
 
+function buildSummaryHighlight(data) {
+  if (!data || typeof data !== 'object') return null;
+
+  const shortSummary =
+    typeof data.short_summary === 'string' ? data.short_summary.trim() : '';
+  if (shortSummary) return shortSummary;
+
+  const responseText =
+    typeof data.response === 'string' ? data.response.replace(/\*\*/g, '').trim() : '';
+  if (!responseText) return null;
+
+  const firstLine = responseText.split('\n').find((line) => line.trim()) || '';
+  const compact = firstLine.trim();
+  if (!compact) return null;
+  if (compact.length <= 220) return compact;
+  return `${compact.slice(0, 217).trim()}...`;
+}
+
 async function fetchAnalysisPreview(cacheId, selectedBackendType, sessionId) {
   if (!cacheId) return null;
   const analysisUrl = getAnalysisApiUrl(selectedBackendType);
@@ -266,6 +284,7 @@ function AppContent() {
       const assistantMessage = {
         role: 'assistant',
         text: displayText || (hasTabularData ? '' : 'No response received.'),
+        summary_highlight: buildSummaryHighlight(data),
         sql_query: data.sql_query || data.sql || null,
         cache_id: data.cache_id || null,
         backendType,

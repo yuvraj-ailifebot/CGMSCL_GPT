@@ -173,6 +173,27 @@ function renderInline(text) {
 function DataTable({ rows, columns }) {
   const [page, setPage] = React.useState(0);
   const PAGE_SIZE = 50;
+  const dateFormatter = React.useMemo(function() {
+    return new Intl.DateTimeFormat('en-GB');
+  }, []);
+
+  function formatCellValue(value) {
+    if (value === null || value === undefined) return '—';
+    if (typeof value !== 'string') return String(value);
+
+    const trimmed = value.trim();
+    const isoDateTimePattern = /^\d{4}-\d{2}-\d{2}(?:[T\s]\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:?\d{2})?)?$/;
+    if (!isoDateTimePattern.test(trimmed)) {
+      return trimmed;
+    }
+
+    const parsedDate = new Date(trimmed);
+    if (Number.isNaN(parsedDate.getTime())) {
+      return trimmed;
+    }
+
+    return dateFormatter.format(parsedDate);
+  }
 
   if (!rows || !Array.isArray(rows) || rows.length === 0) return null;
 
@@ -216,7 +237,7 @@ function DataTable({ rows, columns }) {
                   {cols.map(function(col, ci) {
                     // Support both array rows (positional) and object rows (keyed)
                     const val = rowsAreArrays ? row[ci] : row[col];
-                    return <td key={ci}>{val === null || val === undefined ? '—' : String(val)}</td>;
+                    return <td key={ci}>{formatCellValue(val)}</td>;
                   })}
                 </tr>
               );
@@ -259,6 +280,14 @@ function MessageBubble({ message, index, messages }) {
   const isUser = message.role === 'user';
   const [showSQL, setShowSQL] = React.useState(false);
   const hasSQL = !isUser && message.sql_query && String(message.sql_query).trim().length > 0;
+  const hasSummaryHighlight =
+    !isUser &&
+    typeof message.summary_highlight === 'string' &&
+    message.summary_highlight.trim().length > 0;
+  const shouldRenderMessageText =
+    typeof message.text === 'string' &&
+    message.text.trim().length > 0 &&
+    (!hasSummaryHighlight || message.text.trim() !== message.summary_highlight.trim());
 
   return (
     <div className={'message ' + (isUser ? 'user-message' : 'bot-message')}>
@@ -281,6 +310,11 @@ function MessageBubble({ message, index, messages }) {
         )}
 
         <div className="message-content">
+          {hasSummaryHighlight && (
+            <p className="msg-p" style={{ fontWeight: 600 }}>
+              {message.summary_highlight}
+            </p>
+          )}
           {hasSQL && (
             <div style={{ marginBottom: 8 }}>
               <button className="sql-toggle-btn" onClick={function(){ setShowSQL(function(v){ return !v; }); }}>
@@ -291,7 +325,7 @@ function MessageBubble({ message, index, messages }) {
           )}
           {hasSQL && <AnalysisDropdown sqlQuery={message.sql_query} />}
 
-          <MessageText text={message.text} />
+          {shouldRenderMessageText && <MessageText text={message.text} />}
 
           <DataTable rows={message.dataRows} columns={message.dataColumns} />
         </div>

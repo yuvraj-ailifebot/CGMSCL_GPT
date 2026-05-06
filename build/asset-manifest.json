@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/static/css/main.ed73c21a.css",
-    "main.js": "/static/js/main.b450d772.js",
+    "main.css": "/static/css/main.47ae6efd.css",
+    "main.js": "/static/js/main.6c90e2d3.js",
     "static/media/motherson2.png": "/static/media/motherson2.fa82ff5c3e697ee190bf.png",
     "static/media/excel.png": "/static/media/excel.befbd8c2421a6913c629.png",
     "static/media/company_logo-01.jpg": "/static/media/company_logo-01.b7f46805132243cc36e8.jpg",
     "index.html": "/index.html",
-    "main.ed73c21a.css.map": "/static/css/main.ed73c21a.css.map",
-    "main.b450d772.js.map": "/static/js/main.b450d772.js.map"
+    "main.47ae6efd.css.map": "/static/css/main.47ae6efd.css.map",
+    "main.6c90e2d3.js.map": "/static/js/main.6c90e2d3.js.map"
   },
   "entrypoints": [
-    "static/css/main.ed73c21a.css",
-    "static/js/main.b450d772.js"
+    "static/css/main.47ae6efd.css",
+    "static/js/main.6c90e2d3.js"
   ]
 }

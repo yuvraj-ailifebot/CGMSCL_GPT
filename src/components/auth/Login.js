@@ -10,6 +10,7 @@ const TABS = [
   { id: 'CGMSCL-HO',     label: 'CGMSCL-HO',     usertype: 'HO'    },
   { id: 'Warehouse',      label: 'Warehouse',      usertype: 'WH'    },
   { id: 'Infrastructure', label: 'Infrastructure', usertype: 'INFRA' },
+  { id: 'Development',    label: 'Development',    usertype: null    },
 ];
 
 const MASTER_URL = 'https://dpdmis.in/CGMSCHO_API2/api/Master/masddlUser';
@@ -74,6 +75,11 @@ function Login() {
   useEffect(() => {
     const tab = TABS.find(t => t.id === activeTab);
     if (!tab) return;
+    if (!tab.usertype) {
+      setUsers([]);
+      setUsersLoading(false);
+      return;
+    }
     setUsersLoading(true);
     setUsers([]);
     fetchUsersForTab(tab.usertype)
@@ -191,6 +197,34 @@ function Login() {
     }
   };
 
+  const handleFormSubmit = async (e) => {
+    if (activeTab === 'Development') {
+      e.preventDefault();
+      return;
+    }
+    await handleLogin(e);
+  };
+
+  const handleDevBypassLogin = () => {
+    setError('');
+    setInfo('');
+    setIsLoading(true);
+    try {
+      const result = loginWithOTP({
+        userid: 'dev_ailifebot',
+        textfield: 'AILIFEBOT',
+        rolename: 'Dev',
+      });
+      if (result?.success !== false) {
+        // Dev login transitions immediately; avoid success popup overlay.
+      } else {
+        setError(result?.error || 'Development login failed.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const filteredUsers = searchQuery.trim()
     ? users.filter(u => u.name.toLowerCase().includes(searchQuery.toLowerCase()))
     : users;
@@ -237,7 +271,7 @@ function Login() {
           </div>
 
           {/* Tabs */}
-          <div className="lp-tabs">
+          <div className={`lp-tabs${TABS.length > 4 ? ' lp-tabs--compact' : ''}`}>
             {TABS.map(tab => (
               <button
                 key={tab.id}
@@ -249,7 +283,7 @@ function Login() {
           </div>
 
           {/* Form */}
-          <form className="lp-form" onSubmit={handleLogin}>
+          <form className="lp-form" onSubmit={handleFormSubmit}>
 
             {error && (
               <div className="lp-banner lp-banner--error">
@@ -262,179 +296,188 @@ function Login() {
               </div>
             )}
 
-            {/* User Dropdown */}
-            <div className="lp-field">
-              <div className="lp-dropdown" ref={dropdownRef}>
+            {activeTab === 'Development' ? (
+              <div className="lp-field">
+                <div className="lp-banner lp-banner--info">
+                  <span className="lp-banner-icon">i</span>
+                  Development pass login for internal testing.
+                </div>
                 <button
                   type="button"
-                  className={`lp-dropdown-trigger${dropdownOpen ? ' lp-dropdown-trigger--open' : ''}${!selectedUser ? ' lp-dropdown-trigger--placeholder' : ''}`}
-                  onClick={() => !isLoading && !usersLoading && setDropdownOpen(o => !o)}
-                  disabled={isLoading || usersLoading}
+                  className="lp-btn-dev-pass"
+                  onClick={handleDevBypassLogin}
+                  disabled={isLoading}
                 >
-                  {usersLoading ? (
-                    <>
-                      <span className="lp-spinner lp-spinner--green"></span>
-                      <span className="lp-dropdown-label" style={{ color: '#9ca3af' }}>Loading users…</span>
-                    </>
+                  {isLoading ? (
+                    <><span className="lp-spinner lp-spinner--white"></span>Signing in…</>
                   ) : (
                     <>
-                      <svg className="lp-dropdown-user-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="11" width="18" height="10" rx="2"/>
+                        <circle cx="12" cy="16" r="1"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                       </svg>
-                      <span className="lp-dropdown-label">
-                        {selectedUser
-                          ? users.find(u => String(u.id) === String(selectedUser))?.name || PLACEHOLDER[activeTab]
-                          : PLACEHOLDER[activeTab]}
-                      </span>
-                      <svg className={`lp-dropdown-chevron${dropdownOpen ? ' lp-dropdown-chevron--up' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="6 9 12 15 18 9"/>
-                      </svg>
+                      Sign in with Development Pass
                     </>
                   )}
                 </button>
+              </div>
+            ) : (
+              <>
+                {/* User Dropdown */}
+                <div className="lp-field">
+                  <div className="lp-dropdown" ref={dropdownRef}>
+                    <button
+                      type="button"
+                      className={`lp-dropdown-trigger${dropdownOpen ? ' lp-dropdown-trigger--open' : ''}${!selectedUser ? ' lp-dropdown-trigger--placeholder' : ''}`}
+                      onClick={() => !isLoading && !usersLoading && setDropdownOpen(o => !o)}
+                      disabled={isLoading || usersLoading}
+                    >
+                      {usersLoading ? (
+                        <>
+                          <span className="lp-spinner lp-spinner--green"></span>
+                          <span className="lp-dropdown-label" style={{ color: '#9ca3af' }}>Loading users…</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg className="lp-dropdown-user-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                          </svg>
+                          <span className="lp-dropdown-label">
+                            {selectedUser
+                              ? users.find(u => String(u.id) === String(selectedUser))?.name || PLACEHOLDER[activeTab]
+                              : PLACEHOLDER[activeTab]}
+                          </span>
+                          <svg className={`lp-dropdown-chevron${dropdownOpen ? ' lp-dropdown-chevron--up' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="6 9 12 15 18 9"/>
+                          </svg>
+                        </>
+                      )}
+                    </button>
 
-                {dropdownOpen && (
-                  <div className="lp-dropdown-panel">
-                    <div className="lp-dropdown-search">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="11" cy="11" r="8"/>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                      </svg>
-                      <input
-                        type="text"
-                        className="lp-dropdown-search-input"
-                        placeholder="Search user..."
-                        value={searchQuery}
-                        onChange={e => setSearchQuery(e.target.value)}
-                        autoFocus
-                      />
-                    </div>
-                    <ul className="lp-dropdown-list">
-                      {filteredUsers.length === 0 ? (
-                        <li className="lp-dropdown-empty">No users found</li>
-                      ) : filteredUsers.map(u => (
-                        <li
-                          key={u.id}
-                          className={`lp-dropdown-item${String(u.id) === String(selectedUser) ? ' lp-dropdown-item--active' : ''}`}
-                          onClick={() => {
-                            setSelectedUser(String(u.id));
-                            setOtpSent(false);
-                            setOtp('');
-                            setError('');
-                            setDropdownOpen(false);
-                            setSearchQuery('');
-                          }}
-                        >
-                          {String(u.id) === String(selectedUser) && (
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                              <polyline points="20 6 9 17 4 12"/>
-                            </svg>
-                          )}
-                          {u.name}
-                        </li>
-                      ))}
-                    </ul>
+                    {dropdownOpen && (
+                      <div className="lp-dropdown-panel">
+                        <div className="lp-dropdown-search">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                          </svg>
+                          <input
+                            type="text"
+                            className="lp-dropdown-search-input"
+                            placeholder="Search user..."
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                            autoFocus
+                          />
+                        </div>
+                        <ul className="lp-dropdown-list">
+                          {filteredUsers.length === 0 ? (
+                            <li className="lp-dropdown-empty">No users found</li>
+                          ) : filteredUsers.map(u => (
+                            <li
+                              key={u.id}
+                              className={`lp-dropdown-item${String(u.id) === String(selectedUser) ? ' lp-dropdown-item--active' : ''}`}
+                              onClick={() => {
+                                setSelectedUser(String(u.id));
+                                setOtpSent(false);
+                                setOtp('');
+                                setError('');
+                                setDropdownOpen(false);
+                                setSearchQuery('');
+                              }}
+                            >
+                              {String(u.id) === String(selectedUser) && (
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                                  <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                              )}
+                              {u.name}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              {!selectedUser && (
-                <span className="lp-hint">Please select your user account</span>
-              )}
-            </div>
+                  {!selectedUser && (
+                    <span className="lp-hint">Please select your user account</span>
+                  )}
+                </div>
 
-            {/* Generate OTP */}
-            <div className="lp-otp-row">
-              <div className="lp-field" style={{ flex: 1, margin: 0 }}>
-                <input
-                  type="text"
-                  className="lp-input"
-                  placeholder="Enter OTP"
-                  value={otp}
-                  onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))}
-                  disabled={isLoading}
-                  maxLength={8}
-                  autoComplete="one-time-code"
-                />
-              </div>
-              <button
-                type="button"
-                className="lp-btn-otp"
-                onClick={handleGenerateOTP}
-                disabled={isLoading || !selectedUser || otpTimer > 0}
-              >
-                {isLoading && !otpSent
-                  ? <><span className="lp-spinner"></span>Sending…</>
-                  : otpTimer > 0
-                    ? `Resend in ${otpTimer}s`
-                    : 'Send OTP'}
-              </button>
-            </div>
+                {/* Generate OTP */}
+                <div className="lp-otp-row">
+                  <div className="lp-field" style={{ flex: 1, margin: 0 }}>
+                    <input
+                      type="text"
+                      className="lp-input"
+                      placeholder="Enter OTP"
+                      value={otp}
+                      onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                      disabled={isLoading}
+                      maxLength={8}
+                      autoComplete="one-time-code"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="lp-btn-otp"
+                    onClick={handleGenerateOTP}
+                    disabled={isLoading || !selectedUser || otpTimer > 0}
+                  >
+                    {isLoading && !otpSent
+                      ? <><span className="lp-spinner"></span>Sending…</>
+                      : otpTimer > 0
+                        ? `Resend in ${otpTimer}s`
+                        : 'Send OTP'}
+                  </button>
+                </div>
 
-            {/* CAPTCHA */}
-            <div className="lp-field">
-              <label className="lp-captcha-label">Security CAPTCHA</label>
-              <div className="lp-captcha-row">
-                <span className="lp-captcha-box">{captchaText}</span>
-                <button type="button" className="lp-captcha-refresh" onClick={refreshCaptcha} title="Refresh CAPTCHA">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
-                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-                  </svg>
-                  Refresh
+                {/* CAPTCHA */}
+                <div className="lp-field">
+                  <label className="lp-captcha-label">Security CAPTCHA</label>
+                  <div className="lp-captcha-row">
+                    <span className="lp-captcha-box">{captchaText}</span>
+                    <button type="button" className="lp-captcha-refresh" onClick={refreshCaptcha} title="Refresh CAPTCHA">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                      </svg>
+                      Refresh
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    className="lp-input"
+                    style={{ marginTop: 8 }}
+                    placeholder="Enter CAPTCHA above"
+                    value={captchaInput}
+                    onChange={e => setCaptchaInput(e.target.value.toUpperCase())}
+                    disabled={isLoading}
+                    maxLength={6}
+                    autoComplete="off"
+                  />
+                </div>
+
+                {/* Login Button */}
+                <button
+                  type="submit"
+                  className="lp-btn-login"
+                  disabled={isLoading || !selectedUser || !otp || !captchaInput}
+                >
+                  {isLoading && otpSent
+                    ? <><span className="lp-spinner lp-spinner--white"></span>Verifying…</>
+                    : (
+                      <>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
+                        </svg>
+                        Sign in via OTP
+                      </>
+                    )}
                 </button>
-              </div>
-              <input
-                type="text"
-                className="lp-input"
-                style={{ marginTop: 8 }}
-                placeholder="Enter CAPTCHA above"
-                value={captchaInput}
-                onChange={e => setCaptchaInput(e.target.value.toUpperCase())}
-                disabled={isLoading}
-                maxLength={6}
-                autoComplete="off"
-              />
-            </div>
-
-            {/* Login Button */}
-            <button
-              type="submit"
-              className="lp-btn-login"
-              disabled={isLoading || !selectedUser || !otp || !captchaInput}
-            >
-              {isLoading && otpSent
-                ? <><span className="lp-spinner lp-spinner--white"></span>Verifying…</>
-                : (
-                  <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
-                    </svg>
-                    Sign in via OTP
-                  </>
-                )}
-            </button>
-
-            {/* ⚠️ DEV BYPASS — AILIFEBOT — REMOVE BEFORE PRODUCTION ⚠️ */}
-            <button
-              type="button"
-              className="lp-dev-bypass-btn"
-              onClick={() => {
-                setIsLoading(true);
-                const result = loginWithOTP({
-                  userid: 'dev_ailifebot',
-                  textfield: 'AILIFEBOT',
-                  rolename: 'Dev',
-                });
-                if (result?.success !== false) {
-                  showNotification('Dev bypass — logged in as AILIFEBOT', 'success');
-                }
-                setIsLoading(false);
-              }}
-              disabled={isLoading}
-            >
-              ⚠️ DEV — Sign in as AILIFEBOT
-            </button>
+              </>
+            )}
 
           </form>
 

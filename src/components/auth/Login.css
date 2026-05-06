@@ -156,6 +156,20 @@
   box-shadow:0 1px 4px rgba(0,0,0,.1);
 }
 
+/* Compact layout when many role tabs exist (e.g., with Development tab). */
+.lp-tabs--compact {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.lp-tabs--compact::-webkit-scrollbar { display: none; }
+.lp-tabs--compact .lp-tab {
+  flex: 0 0 auto;
+  min-width: 98px;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
 /* ── Form / Fields ── */
 .lp-form { display:flex;flex-direction:column;gap:14px; }
 .lp-field { display:flex;flex-direction:column;gap:4px; }
@@ -298,6 +312,29 @@
 .lp-btn-login:not(:disabled):hover { background-position:right center;opacity:.92;transform:translateY(-1px); }
 .lp-btn-login:disabled { opacity:.5;cursor:not-allowed; }
 
+/* ── Development pass button ── */
+.lp-btn-dev-pass {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #0f766e, #0d9488 50%, #14b8a6);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.2px;
+  transition: opacity .2s, transform .15s;
+  box-shadow: 0 4px 16px rgba(20, 184, 166, .28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.lp-btn-dev-pass:not(:disabled):hover { opacity: .92; transform: translateY(-1px); }
+.lp-btn-dev-pass:disabled { opacity: .5; cursor: not-allowed; }
+
 /* ── Spinner ── */
 .lp-spinner {
   display:inline-block;width:14px;height:14px;
@@ -331,33 +368,3 @@
   .lp-btn-otp { width:100%; }
 }
 
-/* ── DEV BYPASS button (remove before production) ── */
-.lp-dev-bypass-btn {
-  width: 100%;
-  margin-top: 6px;
-  padding: 8px 12px;
-  background: repeating-linear-gradient(
-    45deg,
-    #fff3cd,
-    #fff3cd 8px,
-    #fff9e6 8px,
-    #fff9e6 16px
-  );
-  border: 1.5px dashed #f59e0b;
-  border-radius: 10px;
-  color: #92400e;
-  font-size: 12.5px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: 'Inter', sans-serif;
-  letter-spacing: 0.3px;
-  transition: opacity 0.2s, transform 0.15s;
-}
-.lp-dev-bypass-btn:hover:not(:disabled) {
-  opacity: 0.85;
-  transform: translateY(-1px);
-}
-.lp-dev-bypass-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
