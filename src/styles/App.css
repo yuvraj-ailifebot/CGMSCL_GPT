@@ -5069,21 +5069,116 @@
             letter-spacing: -0.01em;
         }
 
-        /* Assistant typing indicator bubble */
-        .typing-message .typing-bubble {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: #f8fbf8;
-            border: 1px dashed rgba(31, 114, 70, 0.35);
-            box-shadow: 0 6px 16px rgba(17, 24, 39, 0.06);
-            color: #1F7246;
+        /* ── Thinking / loading bubble (GPT-style) ── */
+        .thinking-bubble {
+            background: #ffffff;
+            border: 1px solid #e5e7eb !important;
+            border-left: 3px solid #1F7246 !important;
+            box-shadow: 0 2px 16px rgba(17, 24, 39, 0.07) !important;
+            padding: 14px 18px !important;
+            min-width: 230px;
+            max-width: 360px;
         }
 
-        .typing-text {
-            font-size: 14px;
+        .thinking-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .thinking-brand {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #1F7246;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .thinking-live-badge {
+            font-size: 0.65rem;
             font-weight: 600;
-            letter-spacing: -0.01em;
+            color: #1F7246;
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+            border-radius: 20px;
+            padding: 1px 8px;
+            animation: thinking-badge-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes thinking-badge-pulse {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.45; }
+        }
+
+        .thinking-body {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            margin-bottom: 14px;
+        }
+
+        .thinking-dots {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .thinking-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #1F7246;
+            animation: thinking-bounce 1.4s ease-in-out infinite;
+        }
+        .thinking-dot:nth-child(1) { animation-delay: 0s; }
+        .thinking-dot:nth-child(2) { animation-delay: 0.22s; }
+        .thinking-dot:nth-child(3) { animation-delay: 0.44s; }
+
+        @keyframes thinking-bounce {
+            0%, 75%, 100% { transform: translateY(0);    opacity: 0.35; }
+            35%            { transform: translateY(-7px); opacity: 1;    }
+        }
+
+        .thinking-phase {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: #374151;
+            animation: thinking-fade-in 0.35s ease-out;
+        }
+
+        @keyframes thinking-fade-in {
+            from { opacity: 0; transform: translateX(6px); }
+            to   { opacity: 1; transform: translateX(0);   }
+        }
+
+        .thinking-steps {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .thinking-step {
+            height: 3px;
+            flex: 1;
+            border-radius: 2px;
+            background: #e5e7eb;
+            transition: background 0.4s ease;
+        }
+
+        .thinking-step--active {
+            background: #1F7246;
+            animation: thinking-step-pulse 1.2s ease-in-out infinite;
+        }
+
+        .thinking-step--done {
+            background: #86efac;
+        }
+
+        @keyframes thinking-step-pulse {
+            0%, 100% { opacity: 1;    }
+            50%       { opacity: 0.5; }
         }
 
         .loader {
@@ -7650,6 +7745,231 @@
         .welcome-screen { padding-top: 0 !important; }
         .top-right-controls { top: 14px !important; right: 18px !important; }
 
+
+        /* ─────────────────────────────────────
+           SUMMARY CARD (summary_highlight)
+        ───────────────────────────────────── */
+        .summary-card {
+          border: 1px solid #bbf7d0;
+          border-radius: 10px;
+          overflow: hidden;
+          margin-bottom: 14px;
+          background: #f0fdf4;
+        }
+        .summary-card-header {
+          display: flex;
+          align-items: flex-start;
+          gap: 9px;
+          background: linear-gradient(90deg, #dcfce7 0%, #f0fdf4 100%);
+          border-bottom: 1px solid #bbf7d0;
+          padding: 10px 14px;
+        }
+        .summary-card-icon {
+          width: 16px;
+          height: 16px;
+          flex-shrink: 0;
+          color: #1F7246;
+          margin-top: 2px;
+        }
+        .summary-card-severity-icon {
+          font-size: 1rem;
+          flex-shrink: 0;
+          margin-top: 1px;
+          line-height: 1;
+        }
+        .summary-card-headline {
+          font-size: 0.88rem;
+          font-weight: 700;
+          color: #14532d;
+          line-height: 1.5;
+        }
+        .summary-card-items {
+          list-style: none;
+          margin: 0;
+          padding: 8px 14px 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .summary-card-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+        }
+        .summary-card-num {
+          flex-shrink: 0;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: #1F7246;
+          color: #fff;
+          font-size: 0.7rem;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 1px;
+        }
+        .summary-card-item-text {
+          font-size: 0.86rem;
+          color: #1f2937;
+          line-height: 1.6;
+        }
+
+        /* ── Structured Summary Card (new format) ── */
+        .summary-card--structured {
+          border-color: #bbf7d0;
+          background: #f0fdf4;
+        }
+
+        /* KPI Chips Row */
+        .summary-kpi-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          padding: 10px 14px;
+          border-bottom: 1px solid #e5e7eb;
+          background: #fff;
+        }
+        .summary-kpi-chip {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          border-radius: 8px;
+          border: 1px solid #e5e7eb;
+          background: #f9fafb;
+          min-width: 100px;
+          flex: 1 1 auto;
+          max-width: 220px;
+        }
+        .summary-kpi-chip--critical {
+          background: #fef2f2;
+          border-color: #fecaca;
+        }
+        .summary-kpi-chip--warning {
+          background: #fffbeb;
+          border-color: #fde68a;
+        }
+        .summary-kpi-chip--good {
+          background: #f0fdf4;
+          border-color: #bbf7d0;
+        }
+        .summary-kpi-chip--neutral {
+          background: #f0f9ff;
+          border-color: #bae6fd;
+        }
+        .summary-kpi-body {
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+        }
+        .summary-kpi-value {
+          font-size: 0.9rem;
+          font-weight: 700;
+          color: #111827;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .summary-kpi-label {
+          font-size: 0.7rem;
+          color: #6b7280;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .kpi-badge {
+          font-size: 0.85rem;
+          flex-shrink: 0;
+          line-height: 1;
+        }
+
+        /* Insights List */
+        .summary-insights-list {
+          list-style: none;
+          margin: 0;
+          padding: 10px 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          border-bottom: 1px solid #e5e7eb;
+        }
+        .summary-insight-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+        }
+        .summary-insight-dot {
+          font-size: 0.85rem;
+          flex-shrink: 0;
+          margin-top: 1px;
+          line-height: 1.4;
+        }
+        .summary-insight-text {
+          font-size: 0.85rem;
+          color: #1f2937;
+          line-height: 1.55;
+        }
+
+        /* Actions Section */
+        .summary-actions-section {
+          padding: 8px 14px 10px;
+        }
+        .summary-actions-toggle {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          font-size: 0.82rem;
+          font-weight: 600;
+          color: #1F7246;
+          padding: 4px 0;
+          font-family: inherit;
+          transition: color 0.15s;
+        }
+        .summary-actions-toggle:hover { color: #14532d; }
+        .summary-actions-list {
+          list-style: none;
+          margin: 8px 0 0;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .summary-action-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          padding: 6px 10px;
+          background: #fff;
+          border: 1px solid #d1fae5;
+          border-radius: 7px;
+        }
+        .summary-action-num {
+          flex-shrink: 0;
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: #1F7246;
+          color: #fff;
+          font-size: 0.65rem;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 1px;
+        }
+        .summary-action-text {
+          font-size: 0.83rem;
+          color: #1f2937;
+          line-height: 1.5;
+        }
 
         /* ─────────────────────────────────────
            MESSAGE TEXT — rich markdown styles

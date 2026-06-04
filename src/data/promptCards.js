@@ -30,6 +30,22 @@
 
       export const globalPromptCards = [
         {
+          id: 'Stock Analysis',
+          type: 'main',
+          icon: 'fas fa-warehouse',
+          title: 'Current Stock Analysis',
+          description: 'Stock Analysis warehouse Wise, total Stock and item wise',
+          prompts: [
+            'Show me stock status for Antirabies',
+            'Which items have stock under QC?',
+            'Show me ready stock for Oxytocin',
+            'District wise Item stock of (drug_name/code)',
+            'Show me Stock Out items in the warehouse',
+            'Show me CGMSC stock of Antirabies with annual indent (AI) of DHS , CME and current fy issued from Warehouse',
+
+          ]
+        },
+        {
           id: 'Tender / RC Tracking ',
           type: 'main',
           icon: 'fas fa-file-contract',
@@ -50,26 +66,6 @@
             'Show items whose RC expires soon (<90 days)',
             'List the worst performing tenders',
             'What is the average time taken for a tender from start to finish'
-          ]
-        },
-        {
-          id: 'item_accepted_rc_pending_bucket',
-          type: 'main',
-          icon: 'fas fa-circle-check',
-          title: ' Accepted – RC',
-          description: 'Track accepted items awaiting RC approval, monitor supplier delays, and view tender-wise status.',
-          prompts: [
-            'Which supplier has the highest number of accepted items pending approval?',
-            'Which supplier takes the maximum number of days in RC approval / supplies?',
-            'Which item took the maximum number of days to be supplied?',
-            'Which item was accepted most recently?',
-            'Show RC acceptance and pending details of (Item Name).',
-            'List all EDL items present in RC Pending data.',
-            'List all Non-EDL items present in RC Pending data.',
-            'What is the total stock available for EDL items in RC Pending?',
-            'Which tender has the highest number of RC pending accepted items?',
-            'How many suppliers are involved in RC for (Item Name)?',
-            'Show RC pending items accepted in the last 30 days.'
           ]
         },
         {
@@ -108,36 +104,6 @@
           ]
         },
         {
-          id: 'Supply Turnaround Time',
-          type: 'main',
-          icon: 'fas fa-stopwatch',
-          title: 'Supply Turnaround Time',
-          description: 'Track PO execution status, monitor supplier delivery performance, and identify supply delays.',
-          prompts: [
-            'Which POs have partial supply (<50%)?',
-            'For Item Oxytocin Injection IP , has PO been issued to the vendor?',
-            'What is the PO execution status of Item Oxytocin Injection IP?',
-            'What is the supply status of PO for Item Multivitamin + Multimineral Syrup 200 ml ?',
-            'PO-wise supply status (drug, quantity, percentage supplied).',
-            'Vendors who have defaulted in timely supply.',
-            'Which POs are nearing expiry of delivery period?',
-          ]
-        },
-        {
-          id: 'Stock Analysis',
-          type: 'main',
-          icon: 'fas fa-warehouse',
-          title: 'Current Stock Analysis',
-          description: 'Stock Analysis warehouse Wise, total Stock and item wise',
-          prompts: [
-            'Which items have stock under QC?',
-            'Show me ready stock for Oxytocin',
-          ]
-        },
-      ];
-      
-      export const extendedPromptCards = [
-        {
           id: 'quality_control_bucket',
           type: 'main',
           icon: 'fas fa-flask-vial',
@@ -151,7 +117,6 @@
             'What is the average QC time per supplier?'
           ]
         },
-      
         {
           id: 'near expiry_data_bucket',
           type: 'main',
@@ -176,6 +141,10 @@
       
           ]
         },
+       
+      ];
+      
+      export const extendedPromptCards = [
         {
           id: 'expired_items_bucket',
           type: 'main',

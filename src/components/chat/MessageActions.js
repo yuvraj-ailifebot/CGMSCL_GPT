@@ -101,7 +101,6 @@ function MessageActions({ message, index, messages = [] }) {
       await navigator.clipboard.writeText(message.text);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
-      showNotification('Copied to clipboard!', 'success');
     } catch (error) {
       console.error('Failed to copy:', error);
       showNotification('Failed to copy to clipboard', 'error');
@@ -145,7 +144,6 @@ function MessageActions({ message, index, messages = [] }) {
     
     setIsDownloading(true);
     try {
-      showNotification('Generating Excel file...', 'info');
       
       // Priority 1: Use excel_file_id if available (from backend that supports it)
       if (message.excel_file_id) {
@@ -174,7 +172,6 @@ function MessageActions({ message, index, messages = [] }) {
         
         // Track download for feedback
         // trackDownload('excel');
-        showNotification('Excel file downloaded successfully!', 'success');
       }
       // Priority 2: Generate Excel from data rows (from current API)
       else if (message.dataRows && Array.isArray(message.dataRows) && message.dataRows.length > 0) {
@@ -182,21 +179,18 @@ function MessageActions({ message, index, messages = [] }) {
         // Pass columns if available
         await generateExcelFromData(message.dataRows, filename, message.dataColumns);
         // trackDownload('excel');
-        showNotification('Excel file downloaded successfully!', 'success');
       }
       // Priority 3: Generate Excel from suggestions (alternative data format)
       else if (message.suggestions && Array.isArray(message.suggestions) && message.suggestions.length > 0) {
         const filename = `CGMSCL_Query_Results_${new Date().toISOString().replace(/[:.]/g, '-')}.xlsx`;
         await generateExcelFromData(message.suggestions, filename);
         // trackDownload('excel');
-        showNotification('Excel file downloaded successfully!', 'success');
       }
       // Priority 4: Generate Excel from response text (extract tables if present)
       else if (message.text) {
         const filename = `CGMSCL_Query_Results_${new Date().toISOString().replace(/[:.]/g, '-')}.xlsx`;
         await generateExcelFromResponse(message.text, filename);
         // trackDownload('excel');
-        showNotification('Excel file downloaded successfully!', 'success');
       }
       else {
         throw new Error('No data available to export');
@@ -281,7 +275,6 @@ function MessageActions({ message, index, messages = [] }) {
               setFeedbackType(null);
               setDislikeComment('');
               setDislikeReasons([]);
-              showNotification('Feedback saved.', 'success');
             }}
           >
             Submit
@@ -317,7 +310,6 @@ function MessageActions({ message, index, messages = [] }) {
               if (!saved) return;
               setFeedbackType(null);
               setSuggestionComment('');
-              showNotification('Suggestion saved.', 'success');
             }}
           >
             Submit
@@ -333,7 +325,6 @@ function MessageActions({ message, index, messages = [] }) {
             if (!saved) return;
             setSelectedFeedback('like');
             setFeedbackType(null);
-            showNotification('Thanks for your feedback!', 'success');
           }}
           title="Like"
           aria-label="Like response"

@@ -1,72 +1,9 @@
 /**
  * Excel Generator Utility
  * Generates Excel files from tabular data on the frontend
+ * Uses the locally installed 'xlsx' npm package (no CDN required)
  */
-
-// Fallback CDN URL if env var is not set
-const XLSX_CDN_FALLBACK = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-
-function loadXLSXLibrary() {
-  return new Promise((resolve, reject) => {
-    if (window.XLSX) {
-      resolve(window.XLSX);
-      return;
-    }
-
-    // Check if script is already being loaded
-    if (document.querySelector('script[src*="xlsx"]')) {
-      const checkInterval = setInterval(() => {
-        if (window.XLSX) {
-          clearInterval(checkInterval);
-          resolve(window.XLSX);
-        }
-      }, 100);
-      // Timeout after 15 seconds
-      setTimeout(() => {
-        clearInterval(checkInterval);
-        if (window.XLSX) resolve(window.XLSX);
-        else reject(new Error('XLSX library load timed out'));
-      }, 15000);
-      return;
-    }
-
-    // Use env var if set, otherwise use fallback CDN
-    const cdnUrl = process.env.REACT_APP_XLSX_CDN_URL || XLSX_CDN_FALLBACK;
-
-    const script = document.createElement('script');
-    script.src = cdnUrl;
-    script.onload = () => {
-      if (window.XLSX) {
-        resolve(window.XLSX);
-      } else {
-        // Try fallback CDN if primary failed
-        if (cdnUrl !== XLSX_CDN_FALLBACK) {
-          const fallbackScript = document.createElement('script');
-          fallbackScript.src = XLSX_CDN_FALLBACK;
-          fallbackScript.onload = () => window.XLSX ? resolve(window.XLSX) : reject(new Error('XLSX library failed to load from fallback'));
-          fallbackScript.onerror = () => reject(new Error('Failed to load XLSX from fallback CDN'));
-          document.head.appendChild(fallbackScript);
-        } else {
-          reject(new Error('XLSX library failed to initialize'));
-        }
-      }
-    };
-    script.onerror = () => {
-      // Try fallback if primary URL failed
-      if (cdnUrl !== XLSX_CDN_FALLBACK) {
-        console.warn('[Excel] Primary CDN failed, trying fallback...');
-        const fallbackScript = document.createElement('script');
-        fallbackScript.src = XLSX_CDN_FALLBACK;
-        fallbackScript.onload = () => window.XLSX ? resolve(window.XLSX) : reject(new Error('XLSX failed on fallback'));
-        fallbackScript.onerror = () => reject(new Error('Failed to load XLSX library from all CDN sources'));
-        document.head.appendChild(fallbackScript);
-      } else {
-        reject(new Error('Failed to load XLSX library from CDN'));
-      }
-    };
-    document.head.appendChild(script);
-  });
-}
+import * as XLSX from 'xlsx';
 
 /**
  * Convert array of objects or arrays to Excel file (XLSX format)
@@ -79,8 +16,6 @@ export async function generateExcelFromData(data, filename = 'CGMSCL_Query_Resul
     if (!data || !Array.isArray(data) || data.length === 0) {
       throw new Error('No data provided or data is empty');
     }
-
-    const XLSX = await loadXLSXLibrary();
 
     let headers = [];
     let worksheetData = [];

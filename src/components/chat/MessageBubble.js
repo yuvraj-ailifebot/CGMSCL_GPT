@@ -273,6 +273,160 @@ function DataTable({ rows, columns }) {
 }
 
 /**
+ * StatusBadge - colored pill with severity emoji
+ */
+function StatusBadge({ status }) {
+  const config = {
+    critical: { emoji: '🔴', label: 'Critical', cls: 'kpi-badge kpi-badge--critical' },
+    warning:  { emoji: '🟡', label: 'Warning',  cls: 'kpi-badge kpi-badge--warning' },
+    good:     { emoji: '🟢', label: 'Good',     cls: 'kpi-badge kpi-badge--good' },
+    neutral:  { emoji: 'ℹ️',  label: 'Info',     cls: 'kpi-badge kpi-badge--neutral' },
+  };
+  const c = config[status] || config.neutral;
+  return <span className={c.cls}>{c.emoji}</span>;
+}
+
+/**
+ * StructuredSummaryCard — renders the new backend-structured summary
+ * { headline, kpis: [{label, value, status}], insights: [], actions: [] }
+ */
+function StructuredSummaryCard({ data }) {
+  const [showActions, setShowActions] = React.useState(false);
+  const { headline, kpis = [], insights = [], actions = [] } = data;
+
+  const hasCritical = kpis.some(k => k.status === 'critical');
+  const hasWarning  = kpis.some(k => k.status === 'warning');
+
+  const headerEmoji = hasCritical ? '🔴' : hasWarning ? '🟡' : '🟢';
+
+  return (
+    <div className="summary-card summary-card--structured">
+      {/* ── Header ── */}
+      <div className="summary-card-header">
+        <span className="summary-card-severity-icon">{headerEmoji}</span>
+        <span className="summary-card-headline">{headline}</span>
+      </div>
+
+      {/* ── KPI Row ── */}
+      {kpis.length > 0 && (
+        <div className="summary-kpi-row">
+          {kpis.map(function(kpi, idx) {
+            return (
+              <div key={idx} className={'summary-kpi-chip summary-kpi-chip--' + (kpi.status || 'neutral')}>
+                <StatusBadge status={kpi.status} />
+                <div className="summary-kpi-body">
+                  <span className="summary-kpi-value">{kpi.value}</span>
+                  <span className="summary-kpi-label">{kpi.label}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── Insights ── */}
+      {insights.length > 0 && (
+        <ul className="summary-insights-list">
+          {insights.map(function(insight, idx) {
+            return (
+              <li key={idx} className="summary-insight-item">
+                <span className="summary-insight-dot">💡</span>
+                <span className="summary-insight-text">{insight}</span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {/* ── Actions ── */}
+      {actions.length > 0 && (
+        <div className="summary-actions-section">
+          <button
+            className="summary-actions-toggle"
+            onClick={function() { setShowActions(function(v) { return !v; }); }}
+          >
+            <span>📋 Action Recommendations</span>
+            <svg
+              width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+              style={{ transform: showActions ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
+            >
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+          {showActions && (
+            <ul className="summary-actions-list">
+              {actions.map(function(action, idx) {
+                return (
+                  <li key={idx} className="summary-action-item">
+                    <span className="summary-action-num">{idx + 1}</span>
+                    <span className="summary-action-text">{action}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * SummaryHighlight — renders the pipe-delimited summary_highlight as a styled card.
+ * Now also supports structured_summary (new format with KPIs / insights / actions).
+ * "Headline | Record 1 detail | Record 2 detail | ..."
+ */
+function SummaryHighlight({ text, structured }) {
+  // ── New structured format ────────────────────────────────────────────────
+  if (structured && typeof structured === 'object' && structured.headline) {
+    return <StructuredSummaryCard data={structured} />;
+  }
+
+  // ── Legacy pipe-delimited format ─────────────────────────────────────────
+  if (!text || !text.trim()) return null;
+
+  // Try to detect __STRUCTURED__ prefix from short_summary (shouldn't reach frontend but guard anyway)
+  if (typeof text === 'string' && text.startsWith('__STRUCTURED__')) {
+    try {
+      const parsed = JSON.parse(text.slice('__STRUCTURED__'.length));
+      if (parsed && parsed.headline) return <StructuredSummaryCard data={parsed} />;
+    } catch (_) { /* fall through to legacy */ }
+  }
+
+  const parts = text.split(' | ').map(function(p) { return p.trim(); }).filter(Boolean);
+  const [headline, ...allItems] = parts;
+
+  // Always show exactly 2 bullet points
+  const items = allItems.slice(0, 2);
+
+  return (
+    <div className="summary-card">
+      <div className="summary-card-header">
+        <svg className="summary-card-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" strokeWidth="1.6"/>
+          <path d="M6 9h8M6 12h5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+          <path d="M6 2v3M14 2v3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+        </svg>
+        <span className="summary-card-headline">{headline}</span>
+      </div>
+      {items.length > 0 && (
+        <ul className="summary-card-items">
+          {items.map(function(item, idx) {
+            return (
+              <li key={idx} className="summary-card-item">
+                <span className="summary-card-num">{idx + 1}</span>
+                <span className="summary-card-item-text">{item}</span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/**
  * Message Bubble Component
  */
 function MessageBubble({ message, index, messages }) {
@@ -280,10 +434,12 @@ function MessageBubble({ message, index, messages }) {
   const isUser = message.role === 'user';
   const [showSQL, setShowSQL] = React.useState(false);
   const hasSQL = !isUser && message.sql_query && String(message.sql_query).trim().length > 0;
+  const hasStructuredSummary = !isUser && message.structured_summary && typeof message.structured_summary === 'object' && message.structured_summary.headline;
   const hasSummaryHighlight =
-    !isUser &&
-    typeof message.summary_highlight === 'string' &&
-    message.summary_highlight.trim().length > 0;
+    !isUser && (
+      hasStructuredSummary ||
+      (typeof message.summary_highlight === 'string' && message.summary_highlight.trim().length > 0)
+    );
   const shouldRenderMessageText =
     typeof message.text === 'string' &&
     message.text.trim().length > 0 &&
@@ -311,9 +467,10 @@ function MessageBubble({ message, index, messages }) {
 
         <div className="message-content">
           {hasSummaryHighlight && (
-            <p className="msg-p" style={{ fontWeight: 600 }}>
-              {message.summary_highlight}
-            </p>
+            <SummaryHighlight
+              text={message.summary_highlight}
+              structured={message.structured_summary || null}
+            />
           )}
           {hasSQL && (
             <div style={{ marginBottom: 8 }}>

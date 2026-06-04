@@ -48,19 +48,60 @@ function getDisplayText(data) {
 function buildSummaryHighlight(data) {
   if (!data || typeof data !== 'object') return null;
 
+  // 1. Use backend-provided short_summary if present (already pipe-delimited)
   const shortSummary =
     typeof data.short_summary === 'string' ? data.short_summary.trim() : '';
-  if (shortSummary) return shortSummary;
+  if (shortSummary) {
+    // Enforce max 2 bullet points: keep headline + first 2 items only
+    const parts = shortSummary.split(' | ').map((p) => p.trim()).filter(Boolean);
+    if (parts.length > 3) {
+      return parts.slice(0, 3).join(' | ');
+    }
+    return shortSummary;
+  }
 
+  // 2. Build dynamically from response text
   const responseText =
     typeof data.response === 'string' ? data.response.replace(/\*\*/g, '').trim() : '';
   if (!responseText) return null;
 
-  const firstLine = responseText.split('\n').find((line) => line.trim()) || '';
-  const compact = firstLine.trim();
-  if (!compact) return null;
-  if (compact.length <= 220) return compact;
-  return `${compact.slice(0, 217).trim()}...`;
+  const lines = responseText.split('\n').map((l) => l.trim()).filter(Boolean);
+  if (lines.length === 0) return null;
+
+  // Extract headline: first non-list, non-empty line (truncated)
+  const headlineLine = lines.find((l) => !/^[-•*\d]/.test(l)) || lines[0];
+  const headline = headlineLine.length > 120
+    ? `${headlineLine.slice(0, 117).trim()}...`
+    : headlineLine;
+
+  // Extract bullet/numbered list items as key points
+  const listItems = lines
+    .filter((l) => /^[-•*]\s/.test(l) || /^\d+\.\s/.test(l))
+    .map((l) => l.replace(/^[-•*]\s+|^\d+\.\s+/, '').trim())
+    .filter(Boolean);
+
+  let points = listItems.slice(0, 2);
+
+  // Fallback: use first two meaningful sentences from the text
+  if (points.length < 2) {
+    const sentences = responseText
+      .replace(/\n+/g, ' ')
+      .split(/(?<=[.!?])\s+/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 20 && !/^[-•*\d]/.test(s));
+
+    // Skip the sentence that became the headline
+    const remaining = sentences.filter((s) => !headline.startsWith(s.slice(0, 40)));
+    points = remaining.slice(0, 2 - points.length).map((s) =>
+      s.length > 120 ? `${s.slice(0, 117).trim()}...` : s
+    );
+  }
+
+  // Truncate each point
+  points = points.map((p) => (p.length > 120 ? `${p.slice(0, 117).trim()}...` : p));
+
+  if (points.length === 0) return headline;
+  return [headline, ...points].join(' | ');
 }
 
 async function fetchAnalysisPreview(cacheId, selectedBackendType, sessionId) {
@@ -286,6 +327,7 @@ function AppContent() {
         role: 'assistant',
         text: displayText || (hasTabularData ? '' : 'No response received.'),
         summary_highlight: buildSummaryHighlight(data),
+        structured_summary: data.structured_summary || null,
         sql_query: data.sql_query || data.sql || null,
         cache_id: data.cache_id || null,
         backendType,

@@ -28,14 +28,41 @@ function ChatMessages({ messages, isSending = false }) {
         <MessageBubble key={index} message={message} index={index} messages={messages} />
       ))}
       
-      {isSending && loadingMessage && (
-        <div className="message bot-message typing-message" aria-live="polite">
-          <div className="message-bubble typing-bubble">
-            <div className="loading-spinner button-spinner" role="status" aria-label={loadingMessage} />
-            <span className="typing-text">{loadingMessage}</span>
+      {isSending && loadingMessage && (function() {
+        const phases = [
+          'Understanding your query...',
+          'Retrieving data...',
+          'Analyzing data...',
+          'Generating response...',
+        ];
+        const activeIdx = phases.indexOf(loadingMessage);
+        return (
+          <div className="message bot-message" aria-live="polite">
+            <div className="message-bubble thinking-bubble">
+              <div className="thinking-header">
+                <span className="thinking-brand">CGMSCL GPT</span>
+                <span className="thinking-live-badge">thinking</span>
+              </div>
+              <div className="thinking-body">
+                <div className="thinking-dots">
+                  <span className="thinking-dot" />
+                  <span className="thinking-dot" />
+                  <span className="thinking-dot" />
+                </div>
+                <span key={loadingMessage} className="thinking-phase">{loadingMessage}</span>
+              </div>
+              <div className="thinking-steps">
+                {phases.map(function(phase, i) {
+                  const cls = 'thinking-step' +
+                    (i === activeIdx ? ' thinking-step--active' : '') +
+                    (i < activeIdx ? ' thinking-step--done' : '');
+                  return <span key={i} className={cls} title={phase.replace('...', '')} />;
+                })}
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

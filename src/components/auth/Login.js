@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { showNotification } from '../../utils/notifications';
 import govSeal from '../../assets/images/motherson2.png';
 import cgmsclLogo from '../../assets/images/company_logo-01.jpg';
 import './Login.css';
@@ -145,11 +144,10 @@ function Login() {
     if (!selectedUser) { setError('Please select a user.'); return; }
     setIsLoading(true);
     try {
-      const data = await apiSendOTP(Number(selectedUser), '192.168.1.29');
+      await apiSendOTP(Number(selectedUser), '192.168.1.29');
       setOtpSent(true);
       setOtpTimer(120);
-      setInfo(data?.message || 'OTP sent to your registered mobile number.');
-      showNotification('OTP sent!', 'success');
+      setInfo('OTP sent to your registered mobile number.');
     } catch (err) {
       setError(err.message || 'Failed to send OTP. Please try again.');
     } finally {
@@ -182,7 +180,7 @@ function Login() {
           ...data
         });
         if (result?.success !== false) {
-          showNotification('Login successful! Welcome to CGMSCL GPT Platform.', 'success');
+          // Login successful — transition handled by AuthContext
         } else {
           setError(result.error || 'Login failed.');
         }
