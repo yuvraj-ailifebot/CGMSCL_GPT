@@ -36,7 +36,7 @@
           title: 'Current Stock Analysis',
           description: 'Stock Analysis warehouse Wise, total Stock and item wise',
           prompts: [
-            'Show me stock status for Antirabies',
+            'Show me the stock of D42',
             'Which items have stock under QC?',
             'Show me ready stock for Oxytocin',
             'District wise Item stock of (drug_name/code)',

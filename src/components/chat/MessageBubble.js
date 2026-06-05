@@ -400,14 +400,21 @@ function SummaryHighlight({ text, structured }) {
   // Always show exactly 2 bullet points
   const items = allItems.slice(0, 2);
 
+  const fullText = (headline + ' ' + allItems.join(' ')).toLowerCase();
+  let headerEmoji = 'ℹ️';
+  
+  if (fullText.includes('critical') || fullText.includes('expired') || fullText.includes('overdue') || fullText.includes('delay') || fullText.includes('bad') || fullText.includes('loss') || fullText.includes('fail') || fullText.includes('nsq')) {
+    headerEmoji = '🔴';
+  } else if (fullText.includes('warning') || fullText.includes('pending') || fullText.includes('soon') || fullText.includes('near') || fullText.includes('low')) {
+    headerEmoji = '🟡';
+  } else if (fullText.includes('good') || fullText.includes('success') || fullText.includes('supplied') || fullText.includes('complete') || fullText.includes('valid')) {
+    headerEmoji = '🟢';
+  }
+
   return (
     <div className="summary-card">
       <div className="summary-card-header">
-        <svg className="summary-card-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect x="2" y="5" width="16" height="11" rx="2" stroke="currentColor" strokeWidth="1.6"/>
-          <path d="M6 9h8M6 12h5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-          <path d="M6 2v3M14 2v3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-        </svg>
+        <span className="summary-card-severity-icon">{headerEmoji}</span>
         <span className="summary-card-headline">{headline}</span>
       </div>
       {items.length > 0 && (
