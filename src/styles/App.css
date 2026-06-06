@@ -7822,6 +7822,43 @@
           background: #f0fdf4;
         }
 
+        /* Item Details Box */
+        .summary-item-details-container {
+          padding: 10px 14px 4px 14px;
+          background: #ffffff;
+          border-bottom: 1px solid #e5e7eb;
+        }
+        .summary-item-details-box {
+          border: 1px solid #d1fae5;
+          background: #f8fafc;
+          border-radius: 8px;
+          padding: 12px;
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+          gap: 12px 16px;
+        }
+        .summary-item-detail-row {
+          display: flex;
+          flex-direction: column;
+        }
+        .summary-item-detail-row--full {
+          grid-column: 1 / -1;
+        }
+        .summary-item-detail-label {
+          font-size: 0.68rem;
+          color: #64748b;
+          text-transform: uppercase;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          margin-bottom: 2px;
+        }
+        .summary-item-detail-value {
+          font-size: 0.88rem;
+          color: #0f172a;
+          font-weight: 600;
+          line-height: 1.4;
+        }
+
         /* KPI Chips Row */
         .summary-kpi-row {
           display: flex;

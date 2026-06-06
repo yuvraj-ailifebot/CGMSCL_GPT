@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/static/css/main.372d3981.css",
-    "main.js": "/static/js/main.38537a0c.js",
+    "main.css": "/static/css/main.a0dd73a8.css",
+    "main.js": "/static/js/main.6deb94e2.js",
     "static/media/excel.png": "/static/media/excel.befbd8c2421a6913c629.png",
     "static/media/cg-govt.png": "/static/media/cg-govt.59bee12649368b9a4383.png",
     "static/media/motherson2.png": "/static/media/motherson2.59bee12649368b9a4383.png",
     "static/media/company_logo-01.jpg": "/static/media/company_logo-01.b7f46805132243cc36e8.jpg",
     "index.html": "/index.html",
-    "main.372d3981.css.map": "/static/css/main.372d3981.css.map",
-    "main.38537a0c.js.map": "/static/js/main.38537a0c.js.map"
+    "main.a0dd73a8.css.map": "/static/css/main.a0dd73a8.css.map",
+    "main.6deb94e2.js.map": "/static/js/main.6deb94e2.js.map"
   },
   "entrypoints": [
-    "static/css/main.372d3981.css",
-    "static/js/main.38537a0c.js"
+    "static/css/main.a0dd73a8.css",
+    "static/js/main.6deb94e2.js"
   ]
 }

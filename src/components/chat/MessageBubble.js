@@ -292,7 +292,7 @@ function StatusBadge({ status }) {
  */
 function StructuredSummaryCard({ data }) {
   const [showActions, setShowActions] = React.useState(false);
-  const { headline, kpis = [], insights = [], actions = [] } = data;
+  const { headline, kpis = [], insights = [], actions = [], item_details = {} } = data;
 
   const hasCritical = kpis.some(k => k.status === 'critical');
   const hasWarning  = kpis.some(k => k.status === 'warning');
@@ -306,6 +306,23 @@ function StructuredSummaryCard({ data }) {
         <span className="summary-card-severity-icon">{headerEmoji}</span>
         <span className="summary-card-headline">{headline}</span>
       </div>
+
+      {/* ── Item Details Box ── */}
+      {item_details && Object.keys(item_details).length > 0 && (
+        <div className="summary-item-details-container">
+          <div className="summary-item-details-box">
+            {Object.entries(item_details).map(function([key, value]) {
+              const isFullWidth = key.toLowerCase().includes('name') || String(value).length > 40;
+              return (
+                <div key={key} className={'summary-item-detail-row' + (isFullWidth ? ' summary-item-detail-row--full' : '')}>
+                  <span className="summary-item-detail-label">{key}</span>
+                  <span className="summary-item-detail-value">{value}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ── KPI Row ── */}
       {kpis.length > 0 && (
