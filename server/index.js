@@ -112,7 +112,7 @@ app.post('/api/export-excel', (req, res) => {
     // PUBLIC_BASE_URL should be set in server/.env, e.g.:
     //   PUBLIC_BASE_URL=http://your-ec2-ip:4000
     // or your domain if behind a reverse proxy.
-    const baseUrl = (process.env.PUBLIC_BASE_URL || `http://localhost:${PORT}`).replace(/\/$/, '');
+    const baseUrl = 'http://13.235.71.165:4000';
     const fileUrl = `${baseUrl}/exports/${outFilename}`;
 
     // ── Auto-delete after 30 minutes ────────────────────────────────────────────────────
@@ -136,6 +136,132 @@ app.post('/api/export-excel', (req, res) => {
   } catch (err) {
     console.error('[EXCEL] export error:', err);
     return res.status(500).json({ error: 'Excel generation failed', details: err.message });
+  }
+});
+
+// ───────────────────────────────────────────────────────────────────────────
+// POST /api/export-pdf   (WhatsApp only)
+// Called by the WhatsApp bot after Lambda returns whatsapp_table_hint="pdf".
+//
+// Request body:
+//   { data: Array<Object>, filename?: string, query?: string }
+//
+// Response:
+//   { url: "http://your-server:4000/exports/abc123.pdf",
+//     filename: "CGMSCL_Export_abc123.pdf",
+//     total_records: N,
+//     expires_in: "30 minutes" }
+// ───────────────────────────────────────────────────────────────────────────
+app.post('/api/export-pdf', (req, res) => {
+  let PDFDocument;
+  try {
+    PDFDocument = require('pdfkit');
+  } catch (_) {
+    return res.status(500).json({ error: 'pdfkit not installed. Run: npm install pdfkit' });
+  }
+
+  try {
+    const { data, filename, query } = req.body || {};
+
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      return res.status(400).json({ error: 'data array is required and must not be empty' });
+    }
+
+    const token = crypto.randomBytes(12).toString('hex');
+    const safeBase = (filename || 'CGMSCL_Export').replace(/[^a-zA-Z0-9_-]/g, '_');
+    const outFilename = `${safeBase}_${token}.pdf`;
+    const outPath = path.join(EXPORT_DIR, outFilename);
+
+    const doc = new PDFDocument({ margin: 30, size: 'A4', layout: 'landscape' });
+    const stream = fs.createWriteStream(outPath);
+    doc.pipe(stream);
+
+    const generatedAt = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+    // ── Header ──────────────────────────────────────────────────────────────
+    doc.fontSize(16).font('Helvetica-Bold').text('CGMSCL Stock Report', { align: 'center' });
+    doc.moveDown(0.3);
+    doc.fontSize(9).font('Helvetica').text(`Query: ${query || 'N/A'}`, { align: 'center' });
+    doc.fontSize(9).text(`Generated: ${generatedAt}  |  Total Records: ${data.length}`, { align: 'center' });
+    doc.moveDown(0.8);
+
+    // ── Table ────────────────────────────────────────────────────────────────
+    const headers = Object.keys(data[0]);
+    const pageWidth = doc.page.width - 60;           // 30px margin each side
+    const colWidth = Math.min(pageWidth / headers.length, 130);
+    const rowHeight = 14;
+    let x = 30;
+    let y = doc.y;
+
+    // Header row background
+    doc.rect(x, y, colWidth * headers.length, rowHeight).fill('#2c5f8a');
+    doc.font('Helvetica-Bold').fontSize(8).fillColor('white');
+    headers.forEach((h, i) => {
+      doc.text(h.replace(/_/g, ' '), x + i * colWidth + 3, y + 3, {
+        width: colWidth - 6,
+        ellipsis: true,
+        lineBreak: false,
+      });
+    });
+    y += rowHeight;
+
+    // Data rows
+    doc.font('Helvetica').fontSize(8).fillColor('black');
+    data.forEach((row, rowIdx) => {
+      if (y + rowHeight > doc.page.height - 40) {
+        doc.addPage();
+        y = 30;
+      }
+      // Alternating row background
+      if (rowIdx % 2 === 0) {
+        doc.rect(x, y, colWidth * headers.length, rowHeight).fill('#f0f4f8');
+        doc.fillColor('black');
+      }
+      headers.forEach((h, i) => {
+        doc.text(String(row[h] ?? ''), x + i * colWidth + 3, y + 3, {
+          width: colWidth - 6,
+          ellipsis: true,
+          lineBreak: false,
+        });
+      });
+      y += rowHeight;
+    });
+
+    // ── Border around table ──────────────────────────────────────────────────
+    doc.rect(x, doc.y - (data.length % (doc.page.height / rowHeight)) * rowHeight, colWidth * headers.length, 0).stroke('#cccccc');
+
+    doc.end();
+
+    stream.on('finish', () => {
+      const baseUrl = 'http://13.235.71.165:4000';
+      const fileUrl = `${baseUrl}/exports/${outFilename}`;
+
+      // Auto-delete after 30 minutes
+      setTimeout(() => {
+        fs.unlink(outPath, (err) => {
+          if (err && err.code !== 'ENOENT') console.error('[PDF] cleanup error:', err.message);
+          else console.log(`[PDF] cleaned up: ${outFilename}`);
+        });
+      }, 30 * 60 * 1000);
+
+      console.log(`[PDF] Generated ${data.length} rows → ${outFilename}`);
+
+      return res.json({
+        url: fileUrl,
+        filename: outFilename,
+        total_records: data.length,
+        expires_in: '30 minutes',
+      });
+    });
+
+    stream.on('error', (err) => {
+      console.error('[PDF] stream error:', err);
+      return res.status(500).json({ error: 'PDF stream failed', details: err.message });
+    });
+
+  } catch (err) {
+    console.error('[PDF] export error:', err);
+    return res.status(500).json({ error: 'PDF generation failed', details: err.message });
   }
 });
 
