@@ -308,38 +308,56 @@ function StructuredSummaryCard({ data }) {
       </div>
 
       {/* ── Item Details Box ── */}
-      {item_details && Object.keys(item_details).length > 0 && (
-        <div className="summary-item-details-container">
-          <div className="summary-item-details-box">
-            {Object.entries(item_details).map(function([key, value]) {
-              const isFullWidth = key.toLowerCase().includes('name') || String(value).length > 40;
+      {item_details && Object.keys(item_details).length > 0 && (() => {
+        const EMPTY = new Set(['n/a', 'na', 'null', 'undefined', '-', '', 'none', 'not available', 'not applicable', '0', 'nil']);
+        const isEmptyValue = (value) => {
+          if (value === null || value === undefined) return true;
+          const s = String(value).trim().toLowerCase();
+          return EMPTY.has(s) || s === 'na' || s === 'n/a' || s === '—' || s === '--';
+        };
+        const visibleEntries = Object.entries(item_details).filter(([, value]) => !isEmptyValue(value));
+        if (visibleEntries.length === 0) return null;
+        return (
+          <div className="summary-item-details-container">
+            <div className="summary-item-details-box">
+              {visibleEntries.map(function([key, value]) {
+                const isFullWidth = key.toLowerCase().includes('name') || String(value).length > 40;
+                return (
+                  <div key={key} className={'summary-item-detail-row' + (isFullWidth ? ' summary-item-detail-row--full' : '')}>
+                    <span className="summary-item-detail-label">{key}</span>
+                    <span className="summary-item-detail-value">{value}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ── KPI Row ── */}
+      {kpis.length > 0 && (() => {
+        const NA_VALS = new Set(['na', 'n/a', 'null', 'undefined', '-', '', 'none', 'not available', '—', '--', 'nil']);
+        const visibleKpis = kpis.filter(kpi => {
+          if (kpi.value === null || kpi.value === undefined) return false;
+          return !NA_VALS.has(String(kpi.value).trim().toLowerCase());
+        });
+        if (visibleKpis.length === 0) return null;
+        return (
+          <div className="summary-kpi-row">
+            {visibleKpis.map(function(kpi, idx) {
               return (
-                <div key={key} className={'summary-item-detail-row' + (isFullWidth ? ' summary-item-detail-row--full' : '')}>
-                  <span className="summary-item-detail-label">{key}</span>
-                  <span className="summary-item-detail-value">{value}</span>
+                <div key={idx} className={'summary-kpi-chip summary-kpi-chip--' + (kpi.status || 'neutral')}>
+                  <StatusBadge status={kpi.status} />
+                  <div className="summary-kpi-body">
+                    <span className="summary-kpi-value">{kpi.value}</span>
+                    <span className="summary-kpi-label">{kpi.label}</span>
+                  </div>
                 </div>
               );
             })}
           </div>
-        </div>
-      )}
-
-      {/* ── KPI Row ── */}
-      {kpis.length > 0 && (
-        <div className="summary-kpi-row">
-          {kpis.map(function(kpi, idx) {
-            return (
-              <div key={idx} className={'summary-kpi-chip summary-kpi-chip--' + (kpi.status || 'neutral')}>
-                <StatusBadge status={kpi.status} />
-                <div className="summary-kpi-body">
-                  <span className="summary-kpi-value">{kpi.value}</span>
-                  <span className="summary-kpi-label">{kpi.label}</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+        );
+      })()}
 
       {/* ── Insights ── */}
       {insights.length > 0 && (
